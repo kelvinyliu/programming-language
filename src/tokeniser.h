@@ -1,46 +1,46 @@
-#pragma once	
+#pragma once    
 #include <stddef.h>
 #include <stdlib.h>
 
 enum TokenType {
 
-	// datatypes
-	TEXT_TYPE,
-	NUMBER_TYPE,
+    // datatypes
+    TEXT_TYPE,
+    NUMBER_TYPE,
 
-	// identifier + literals
-	IDENTIFIER, TEXT, NUMBER,
+    // identifier + literals
+    IDENTIFIER, TEXT, NUMBER,
 
-	// operators
-	EQUAL,
+    // operators
+    EQUAL,
 
-	// punctuation
-	SEMICOLON,
+    // punctuation
+    SEMICOLON,
 
-	// keywords
-	COMMENT, END_OF_FILE,
+    // keywords
+    COMMENT, END_OF_FILE,
 };
 
 union uLiteral {
-	double number_value;
-	char   *text_value;
+    double number_value;
+    char   *text_value;
 };
 
 struct Token {
-	enum  TokenType	tokenType;
-	char			*lexeme;
-	size_t			length;
+    enum  TokenType tokenType;
+    char            *lexeme;
+    size_t          length;
 
-	size_t			line;
-	size_t			column;
+    size_t          line;
+    size_t          column;
 
-	union uLiteral   literal; 
+    union uLiteral   literal; 
 };
 
 struct TokenList {
-	struct Token  *data;
-	size_t        count;
-	size_t        capacity;
+    struct Token  *data;
+    size_t        count;
+    size_t        capacity;
 };
 
 

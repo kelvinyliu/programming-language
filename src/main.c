@@ -6,9 +6,9 @@
 // Helper to print TokenType
 const char* tokenTypeName(enum TokenType t) {
     switch (t) {
-		case TEXT_TYPE:    return "TEXT_TYPE";
-		case NUMBER_TYPE:  return "NUMBER_TYPE";
-		case TEXT:         return "TEXT";
+        case TEXT_TYPE:    return "TEXT_TYPE";
+        case NUMBER_TYPE:  return "NUMBER_TYPE";
+        case TEXT:         return "TEXT";
         case NUMBER:       return "NUMBER";
         case IDENTIFIER:   return "IDENTIFIER";
         case EQUAL:        return "EQUAL";
