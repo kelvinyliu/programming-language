@@ -120,7 +120,6 @@ struct TokenList tokenise(const char* sourceCode) {
             continue;
         }
 
-
         // literals
         // number
         if (isdigit((unsigned char) c)) {
@@ -214,6 +213,46 @@ struct TokenList tokenise(const char* sourceCode) {
                 literal.number_value = 0;
                 struct Token semiColonToken = createToken(SEMICOLON, &sourceCode[i], 1, startLine, startColumn, literal);
                 appendTokenList(&tokens, semiColonToken);
+                nextCharacter(sourceCode, &i, &line, &column);
+                continue;
+            }
+            case '*': {
+                union uLiteral literal;
+                literal.number_value = 0;
+                struct Token starToken = createToken(STAR, &sourceCode[i], 1, startLine, startColumn, literal);
+                appendTokenList(&tokens, starToken);
+                nextCharacter(sourceCode, &i, &line, &column);
+                continue;
+            }
+            case '/': {
+                union uLiteral literal;
+                literal.number_value = 0;
+                struct Token slashToken = createToken(SLASH, &sourceCode[i], 1, startLine, startColumn, literal);
+                appendTokenList(&tokens, slashToken);
+                nextCharacter(sourceCode, &i, &line, &column);
+                continue;
+            }
+            case '(': {
+                union uLiteral literal;
+                literal.number_value = 0;
+                struct Token leftParenToken = createToken(LEFT_PAREN, &sourceCode[i], 1, startLine, startColumn, literal);
+                appendTokenList(&tokens, leftParenToken);
+                nextCharacter(sourceCode, &i, &line, &column);
+                continue;
+            }
+            case ')': {
+                union uLiteral literal;
+                literal.number_value = 0;
+                struct Token rightParenToken = createToken(RIGHT_PAREN, &sourceCode[i], 1, startLine, startColumn, literal);
+                appendTokenList(&tokens, rightParenToken);
+                nextCharacter(sourceCode, &i, &line, &column);
+                continue;
+            }
+            case ',': {
+                union uLiteral literal;
+                literal.number_value = 0;
+                struct Token commaToken = createToken(COMMA, &sourceCode[i], 1, startLine, startColumn, literal);
+                appendTokenList(&tokens, commaToken);
                 nextCharacter(sourceCode, &i, &line, &column);
                 continue;
             }

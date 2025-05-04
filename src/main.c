@@ -12,6 +12,11 @@ const char* tokenTypeName(enum TokenType t) {
         case NUMBER:       return "NUMBER";
         case IDENTIFIER:   return "IDENTIFIER";
         case EQUAL:        return "EQUAL";
+        case STAR:         return "STAR";
+        case SLASH:        return "SLASH";
+        case LEFT_PAREN:   return "LEFT_PAREN";
+        case RIGHT_PAREN:  return "RIGHT_PAREN";
+        case COMMA:   return "COMMA";
         case SEMICOLON:    return "SEMICOLON";
         case END_OF_FILE:  return "END_OF_FILE";
         default:           return "UNKNOWN";

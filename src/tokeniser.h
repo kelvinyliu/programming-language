@@ -5,17 +5,16 @@
 enum TokenType {
 
     // datatypes
-    TEXT_TYPE,
-    NUMBER_TYPE,
+    TEXT_TYPE, NUMBER_TYPE,
 
     // identifier + literals
     IDENTIFIER, TEXT, NUMBER,
 
     // operators
-    EQUAL,
+    EQUAL, STAR, SLASH,
 
     // punctuation
-    SEMICOLON,
+    SEMICOLON, LEFT_PAREN, RIGHT_PAREN, COMMA,
 
     // keywords
     COMMENT, END_OF_FILE,
@@ -34,7 +33,7 @@ struct Token {
     size_t          line;
     size_t          column;
 
-    union uLiteral   literal; 
+    union uLiteral  literal; 
 };
 
 struct TokenList {
