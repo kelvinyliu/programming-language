@@ -1,4 +1,5 @@
 #pragma once
+#include <stdlib.h>
 
 enum ASTNodeType {
     // LITERALS
@@ -36,7 +37,19 @@ struct ASTNode {
     union {
         double  numberValue;
         char*   textValue;
-        struct  ASTVariableDeclaration;
-        struct  ASTVariableAssignment;
+        struct  ASTBinaryOperation binary;
+        struct  ASTVariableDeclaration varDeclaration;
+        struct  ASTVariableAssignment varAssignment;
     } data;
 };
+
+struct ASTNodeList {
+    struct ASTNode* *nodes;
+    size_t          count;
+    size_t          capacity;
+};
+
+void initAST(struct ASTNodeList* ast);
+void appendAST(struct ASTNodeList* ast, struct ASTNode* node);
+void destroyAST(struct ASTNodeList* ast);
+
