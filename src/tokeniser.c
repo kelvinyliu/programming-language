@@ -256,6 +256,22 @@ struct TokenList tokenise(const char* sourceCode) {
                 nextCharacter(sourceCode, &i, &line, &column);
                 continue;
             }
+            case '+': {
+                union uLiteral literal;
+                literal.number_value = 0;
+                struct Token plusToken = createToken(PLUS, &sourceCode[i], 1, startLine, startColumn, literal);
+                appendTokenList(&tokens, plusToken);
+                nextCharacter(sourceCode, &i, &line, &column);
+                continue;
+            }
+            case '-': {
+                union uLiteral literal;
+                literal.number_value = 0;
+                struct Token minusToken = createToken(MINUS, &sourceCode[i], 1, startLine, startColumn, literal);
+                appendTokenList(&tokens, minusToken);
+                nextCharacter(sourceCode, &i, &line, &column);
+                continue;
+            }
             default:
                 nextCharacter(sourceCode, &i, &line, &column);
                 break;

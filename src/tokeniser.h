@@ -11,7 +11,7 @@ enum TokenType {
     IDENTIFIER, TEXT, NUMBER,
 
     // operators
-    EQUAL, STAR, SLASH,
+    EQUAL, STAR, SLASH, PLUS, MINUS,
 
     // punctuation
     SEMICOLON, LEFT_PAREN, RIGHT_PAREN, COMMA,
@@ -50,3 +50,4 @@ struct TokenList tokenise(const char* sourceCode);
 void initTokenList(struct TokenList *tokenList);
 void appendTokenList(struct TokenList *tokenList, struct Token token);
 void destroyTokenList(struct TokenList *tokenList);
+
