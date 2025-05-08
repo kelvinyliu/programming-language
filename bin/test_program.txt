@@ -1,5 +1,5 @@
 number a = 123;
-number b= 5 * 6/6;
+number b= 5 * 6/6
 
 a = 43;
 b = 6 * 777 + 65;
