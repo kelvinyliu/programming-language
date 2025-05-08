@@ -1,13 +1,8 @@
-// main.c
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "parser.h"
 #include "evaluator.h"
-
-// forward
-static void printNode(const struct ASTNode* n);
-static void dumpAST(const struct ASTNodeList* prog);
 
 int main(int argc, char *argv[]) {
     if (argc != 2) {
@@ -39,58 +34,13 @@ int main(int argc, char *argv[]) {
     struct ASTNodeList program = parseProgram(source);
     free(source);
 
-    // 3) Dump the AST
-    //dumpAST(&program);
-
     struct Environment env;
     createEnvironment(&env);
     evaluateAST(&program, &env);
     freeEnvironment(&env);
 
-    // 4) Clean up
+    // 3) Clean up
     destroyAST(&program);
     return EXIT_SUCCESS;
-}
-
-// recursively print one AST node
-static void printNode(const struct ASTNode* n) {
-    switch (n->nodeType) {
-      case NODE_NUMBER_LITERAL:
-        printf("%g", n->data.numberValue);
-        break;
-      case NODE_TEXT_LITERAL:
-        printf("%s", n->data.textValue);
-        break;
-      case NODE_VARIABLE_REFERENCE:
-        printf("%s", n->data.textValue);
-        break;
-      case NODE_BINARY_OPERATION:
-        printf("(");
-        printNode(n->data.binary.leftSide);
-        printf(" %c ", n->data.binary.operationChar);
-        printNode(n->data.binary.rightSide);
-        printf(")");
-        break;
-      case NODE_VARIABLE_DECLARATION:
-        printf("[declare %s = ", n->data.varDeclaration.name);
-        printNode(n->data.varDeclaration.node);
-        printf("]");
-        break;
-      case NODE_VARIABLE_ASSIGN:
-        printf("[assign %s = ", n->data.varAssignment.name);
-        printNode(n->data.varAssignment.node);
-        printf("]");
-        break;
-      default:
-        printf("<unknown-node>");
-    }
-}
-
-// walk the ASTNodeList and print each statement on its own line
-static void dumpAST(const struct ASTNodeList* prog) {
-    for (size_t i = 0; i < prog->count; i++) {
-        printNode(prog->nodes[i]);
-        printf("\n");
-    }
 }
 
