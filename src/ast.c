@@ -1,4 +1,4 @@
-#include "ast.h"
+#include "../include/ast.h"
 
 #define AST_INITIAL_CAPACITY 10
 
@@ -42,7 +42,7 @@ void destroyNode(struct ASTNode *n) {
         break;
 
       case NODE_VARIABLE_DECLARATION:
-        // free the variable name, then the initializer subtree
+        // free the variable name, then the initialiser subtree
         free(n->data.varDeclaration.name);
         destroyNode(n->data.varDeclaration.node);
         break;

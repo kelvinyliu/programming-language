@@ -2,7 +2,7 @@
 #include <ctype.h>
 #include <string.h>
 #include <stdbool.h>
-#include "tokeniser.h"
+#include "../include/tokeniser.h"
 
 void initTokenList(struct TokenList *tokenList) {
     tokenList->data = malloc(sizeof(struct Token) * 10);
@@ -54,7 +54,8 @@ void destroyTokenList(struct TokenList *tokenList) {
 
 struct Token createToken(enum TokenType tokenType, const char* lexeme, size_t length, size_t line, size_t column, union uLiteral literal) {
     struct Token newToken;
-
+    newToken.line = line;
+    newToken.column = column;
     newToken.tokenType = tokenType;
     newToken.lexeme = (char *)lexeme;
     newToken.length = length;

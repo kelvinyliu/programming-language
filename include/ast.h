@@ -34,6 +34,8 @@ struct ASTVariableAssignment {
 
 struct ASTNode {
     enum ASTNodeType nodeType;
+    size_t line;
+    size_t column;
     union {
         double  numberValue;
         char*   textValue;

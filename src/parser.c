@@ -1,11 +1,13 @@
-#include "parser.h"
+#include "../include/parser.h"
 #include <stdio.h>
 #include <stdbool.h>
 #include <string.h>
 
-struct ASTNode* createBinaryNode(char op, struct ASTNode* left, struct ASTNode* right) {
+struct ASTNode* createBinaryNode(char op, struct ASTNode* left, struct ASTNode* right, size_t line, size_t column) {
     struct ASTNode* n = malloc(sizeof(struct ASTNode));
     n->nodeType = NODE_BINARY_OPERATION;
+    n->line = line;
+    n->column = column;
     n->data.binary.operationChar = op;
     n->data.binary.leftSide = left;
     n->data.binary.rightSide = right;
@@ -18,6 +20,8 @@ struct ASTNode* parsePrimary(struct TokenList* tokens, size_t* index) {
 
     if (token->tokenType == NUMBER) {
         struct ASTNode* node = malloc(sizeof(struct ASTNode));
+        node->line = token->line;
+        node->column = token->column;
         node->nodeType = NODE_NUMBER_LITERAL;
         node->data.numberValue = token->literal.number_value;
         
@@ -27,6 +31,8 @@ struct ASTNode* parsePrimary(struct TokenList* tokens, size_t* index) {
 
     if (token->tokenType == IDENTIFIER) {
         struct ASTNode* node = malloc(sizeof(struct ASTNode));
+        node->line = token->line;
+        node->column = token->column;
         node->nodeType = NODE_VARIABLE_REFERENCE;
         node->data.textValue = strndup(token->lexeme, token->length);
         
@@ -36,6 +42,8 @@ struct ASTNode* parsePrimary(struct TokenList* tokens, size_t* index) {
 
     if (token->tokenType == TEXT) {
         struct ASTNode* node = malloc(sizeof(struct ASTNode));
+        node->line = token->line;
+        node->column = token->column;
         node->nodeType = NODE_TEXT_LITERAL;
         node->data.textValue = strndup(token->lexeme, token->length);
 
@@ -76,8 +84,10 @@ struct ASTNode* parseTerm(struct TokenList* tokens, size_t* index) {
             char op = token.lexeme[0];
             (*index)++; 
             struct ASTNode* rightSide = parseFactor(tokens, index);
-
-            node = createBinaryNode(op, node, rightSide);
+            
+            size_t line = token.line;
+            size_t column = token.column;
+            node = createBinaryNode(op, node, rightSide, line, column);
         } else {
             break;
         }
@@ -94,8 +104,9 @@ struct ASTNode* parseExpression(struct TokenList* tokens, size_t* index) {
             char op = token.lexeme[0];
             (*index)++;
             struct ASTNode* rightSide = parseTerm(tokens, index);
-
-            node = createBinaryNode(op, node, rightSide);
+            size_t line = token.line;
+            size_t column = token.column;
+            node = createBinaryNode(op, node, rightSide, line, column);
         } else {
             break;
         }
@@ -133,6 +144,8 @@ struct ASTNode* parseDeclaration(struct TokenList* tokens, size_t* index) {
     (*index)++;
 
     struct ASTNode* node = malloc(sizeof(struct ASTNode));
+    node->line = token.line;
+    node->column = token.column;
     node->nodeType = NODE_VARIABLE_DECLARATION;
     node->data.varDeclaration.name = name;
     node->data.varDeclaration.node = init;
@@ -163,6 +176,8 @@ struct ASTNode* parseAssignment(struct TokenList* tokens, size_t* index) {
 
 
     struct ASTNode* node = malloc(sizeof(struct ASTNode));
+    node->line = token.line;
+    node->column = token.column;
     node->nodeType = NODE_VARIABLE_ASSIGN;
     node->data.varAssignment.name = name;
     node->data.varAssignment.node = assignValue;

@@ -2,7 +2,7 @@
 #include "ast.h"
 #include "tokeniser.h"
 
-struct ASTNode* createBinaryNode(char op, struct ASTNode* left, struct ASTNode* right);
+struct ASTNode* createBinaryNode(char op, struct ASTNode* left, struct ASTNode* right, size_t line, size_t column);
 struct ASTNode* parsePrimary(struct TokenList* tokens, size_t* index);
 struct ASTNode* parseFactor(struct TokenList* tokens, size_t* index);
 struct ASTNode* parseTerm(struct TokenList* tokens, size_t* index);

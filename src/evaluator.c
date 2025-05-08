@@ -1,4 +1,4 @@
-#include "evaluator.h"
+#include "../include/evaluator.h"
 #include <stdio.h>
 #include <string.h>
 #define DEFAULT_BUCKET_COUNT 1087
@@ -127,7 +127,7 @@ struct Value evaluateASTNode(const struct ASTNode* node, struct Environment* env
                         case '/':
                             {
                                 if (rightNum == 0) {
-                                    printf("Cannot divide by zero. \n");
+                                    printf("Cannot divide by zero. line %zu column %zu\n", node->line, node->column);
                                     exit(1);
                                 }
                                 res = leftNum / rightNum;
@@ -139,6 +139,8 @@ struct Value evaluateASTNode(const struct ASTNode* node, struct Environment* env
                     }
                     return createNumberValue(res);
                 }
+                printf("Unable to '+'?\n");
+                exit(1);
             }
         case NODE_VARIABLE_DECLARATION: 
             {
