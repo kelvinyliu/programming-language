@@ -1,9 +1,9 @@
 CC = gcc
-CFLAGS = -Wall
-CFILES = main.c tokeniser.c parser.c ast.c evaluator.c
+CFLAGS = -Wall -Wextra -Iinclude
+CFILES = main.c src/tokeniser.c src/parser.c src/ast.c src/evaluator.c
 
 main:
-	$(CC) $(CFLAGS) -o main $(CFILES)
+	$(CC) $(CFLAGS) -o bin/main $(CFILES)
 
 clean:
-	rm -f main
+	rm -f bin/main
