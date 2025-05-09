@@ -6,6 +6,8 @@ enum ValueType {
     VALUE_TEXT,
     VALUE_FUNCTION,
     VALUE_FUNCTION_RETURN,
+    VALUE_TRUE,
+    VALUE_FALSE,
 };
 
 struct Value {
