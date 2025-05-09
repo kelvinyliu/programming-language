@@ -4,6 +4,8 @@
 enum ValueType {
     VALUE_NUMBER,
     VALUE_TEXT,
+    VALUE_FUNCTION,
+    VALUE_FUNCTION_RETURN,
 };
 
 struct Value {
@@ -11,6 +13,7 @@ struct Value {
     union {
         double  number;
         char*   text;
+        struct ASTNodeList* nodeList; 
     } data;
 };
 

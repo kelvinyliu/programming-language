@@ -33,6 +33,7 @@ void freeEnvironment(struct Environment* env) {
             if (e->value.type == VALUE_TEXT) {
                 free(e->value.data.text);
             }
+
             free(e);
             e = next;
         }
@@ -95,6 +96,13 @@ struct Value createTextValue(char* str) {
     return val;
 }
 
+struct Value createFunctionValue(struct ASTNodeList* nodeList) {
+    struct Value val;
+    val.type = VALUE_FUNCTION;
+    val.data.nodeList = nodeList;
+    return val;
+}
+
 struct Value evaluateASTNode(const struct ASTNode* node, struct Environment* env) {
     switch (node->nodeType) {
         case NODE_NUMBER_LITERAL:
@@ -154,6 +162,20 @@ struct Value evaluateASTNode(const struct ASTNode* node, struct Environment* env
                 setValue(env, node->data.varAssignment.name, val);
                 return val;
             }
+        case NODE_FUNCTION_DECLARATION:
+            {
+                struct Value val = createFunctionValue(node->data.funcDeclaration.codeBlock);
+                setValue(env, node->data.funcDeclaration.name, val);
+                return val;
+            }
+        case NODE_FUNCTION_CALL:
+            {
+                struct Value val = getValue(env, node->data.funcCall.name);
+                evaluateAST(val.data.nodeList, env);
+                // could change later to get a return
+                return createNumberValue(0);
+
+            }
         default:
             printf("Unhandled node.\n");
             exit(1);
@@ -166,7 +188,7 @@ void evaluateAST(const struct ASTNodeList* astList, struct Environment* env) {
         struct Value val = evaluateASTNode(node, env);
 
         // TEMP: print method without language builtins.
-        if (node->nodeType != NODE_VARIABLE_DECLARATION && node->nodeType != NODE_VARIABLE_ASSIGN) {
+        if (node->nodeType != NODE_VARIABLE_DECLARATION && node->nodeType != NODE_VARIABLE_ASSIGN && node->nodeType != NODE_FUNCTION_CALL) {
             if (val.type == VALUE_NUMBER) {
                 printf("%g\n", val.data.number);
             } else if (val.type == VALUE_TEXT) {
