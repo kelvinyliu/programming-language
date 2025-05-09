@@ -167,6 +167,12 @@ struct TokenList tokenise(const char* sourceCode) {
                 tokenType = NUMBER_TYPE;
             else if (textSize == 4 && strncmp(&sourceCode[startIndex], "text", 4) == 0) // text type keyword
                 tokenType = TEXT_TYPE;
+            else if (textSize == 7 && strncmp(&sourceCode[startIndex], "boolean", 7) == 0)
+                tokenType = BOOLEAN_TYPE;
+            else if (textSize == 4 && strncmp(&sourceCode[startIndex], "true", 4) == 0)
+                tokenType = TRUE;
+            else if (textSize == 5 && strncmp(&sourceCode[startIndex], "false", 5) == 0)
+                tokenType = FALSE;
             else if (textSize == 2 && strncmp(&sourceCode[startIndex], "fn", 2) == 0)    // function declaration keyword
                 tokenType = FUNCTION_DECLARATION;
 
@@ -201,14 +207,22 @@ struct TokenList tokenise(const char* sourceCode) {
             continue;
         }
         
-        // single character token
+        // single / multi character token
         switch (c) {
             case '=': {
                 union uLiteral literal;
                 literal.number_value = 0;
-                struct Token equalToken = createToken(EQUAL, &sourceCode[i], 1, startLine, startColumn, literal);
-                appendTokenList(&tokens, equalToken);
-                nextCharacter(sourceCode, &i, &line, &column);
+                // == operator
+                if (sourceCode[i+1] == '=') {
+                    struct Token equalityToken = createToken(EQUALITY_OPERATOR, &sourceCode[i], 2, startLine, startColumn, literal);
+                    appendTokenList(&tokens, equalityToken);
+                    nextCharacter(sourceCode, &i, &line, &column);
+                    nextCharacter(sourceCode, &i, &line, &column);
+                } else {
+                    struct Token equalToken = createToken(EQUAL, &sourceCode[i], 1, startLine, startColumn, literal);
+                    appendTokenList(&tokens, equalToken);
+                    nextCharacter(sourceCode, &i, &line, &column);
+                }
                 continue;
             }
             case ';': {
@@ -289,6 +303,36 @@ struct TokenList tokenise(const char* sourceCode) {
                 struct Token rCurlyToken = createToken(RIGHT_CURLY, &sourceCode[i], 1, startLine, startColumn, literal);
                 appendTokenList(&tokens, rCurlyToken);
                 nextCharacter(sourceCode, &i, &line, &column);
+                continue;
+            }
+            case '>': {
+                union uLiteral literal;
+                literal.number_value = 0;
+                if (sourceCode[i+1] == '=') {
+                    struct Token greaterEqualToken = createToken(GREATER_EQUAL, &sourceCode[i], 2, startLine, startColumn, literal);
+                    appendTokenList(&tokens, greaterEqualToken);
+                    nextCharacter(sourceCode, &i, &line, &column);
+                    nextCharacter(sourceCode, &i, &line, &column);
+                } else {
+                    struct Token greaterToken = createToken(MORE_THAN, &sourceCode[i], 1, startLine, startColumn, literal);
+                    appendTokenList(&tokens, greaterToken);
+                    nextCharacter(sourceCode, &i, &line, &column);
+                }
+                continue;
+            }
+            case '<': {
+                union uLiteral literal;
+                literal.number_value = 0;
+                if (sourceCode[i+1] == '=') {
+                    struct Token lessEqualToken = createToken(LESSER_EQUAL, &sourceCode[i], 2, startLine, startColumn, literal);
+                    appendTokenList(&tokens, lessEqualToken);
+                    nextCharacter(sourceCode, &i, &line, &column);
+                    nextCharacter(sourceCode, &i, &line, &column);
+                } else {
+                    struct Token lessToken = createToken(LESS_THAN, &sourceCode[i], 1, startLine, startColumn, literal);
+                    appendTokenList(&tokens, lessToken);
+                    nextCharacter(sourceCode, &i, &line, &column);
+                }
                 continue;
             }
             default:

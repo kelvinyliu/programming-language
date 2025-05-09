@@ -51,6 +51,17 @@ struct ASTNode* parsePrimary(struct TokenList* tokens, size_t* index) {
         return node;
     }
 
+    if (token->tokenType == FALSE || token->tokenType == TRUE) {
+        struct ASTNode* node = malloc(sizeof(struct ASTNode));
+        node->line = token->line;
+        node->column = token->column;
+        node->nodeType = token->tokenType == FALSE ? NODE_BOOL_FALSE : NODE_BOOL_TRUE;
+        node->data.textValue = strndup(token->lexeme, token->length);
+
+        (*index)++;
+        return node;
+    }
+
     // CANNOT PARSE PRIMARY
     // LOG ERROR
     printf("error parsing primary");
@@ -281,7 +292,7 @@ struct ASTNode* parseStatement(struct TokenList* tokens, size_t* index) {
     }
 
     // DECLARATION
-    if (tokenType == TEXT_TYPE || tokenType == NUMBER_TYPE) {
+    if (tokenType == TEXT_TYPE || tokenType == NUMBER_TYPE || tokenType == BOOLEAN_TYPE) {
         return parseDeclaration(tokens, index);
     }
 
