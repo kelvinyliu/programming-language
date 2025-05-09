@@ -163,10 +163,12 @@ struct TokenList tokenise(const char* sourceCode) {
             // Check what type of token it is
             // default to identifier if not detect any keywords
             enum TokenType tokenType = IDENTIFIER;
-            if (textSize == 6 && strncmp(&sourceCode[startIndex], "number", 6) == 0)
+            if (textSize == 6 && strncmp(&sourceCode[startIndex], "number", 6) == 0)    // number type keyword
                 tokenType = NUMBER_TYPE;
-            else if (textSize == 4 && strncmp(&sourceCode[startIndex], "text", 4) == 0)
+            else if (textSize == 4 && strncmp(&sourceCode[startIndex], "text", 4) == 0) // text type keyword
                 tokenType = TEXT_TYPE;
+            else if (textSize == 2 && strncmp(&sourceCode[startIndex], "fn", 2) == 0)    // function declaration keyword
+                tokenType = FUNCTION_DECLARATION;
 
 
             union uLiteral literal;
@@ -270,6 +272,22 @@ struct TokenList tokenise(const char* sourceCode) {
                 literal.number_value = 0;
                 struct Token minusToken = createToken(MINUS, &sourceCode[i], 1, startLine, startColumn, literal);
                 appendTokenList(&tokens, minusToken);
+                nextCharacter(sourceCode, &i, &line, &column);
+                continue;
+            }
+            case '{': {
+                union uLiteral literal;
+                literal.number_value = 0;
+                struct Token lCurlyToken = createToken(LEFT_CURLY, &sourceCode[i], 1, startLine, startColumn, literal);
+                appendTokenList(&tokens, lCurlyToken);
+                nextCharacter(sourceCode, &i, &line, &column);
+                continue;
+            }
+            case '}': {
+                union uLiteral literal;
+                literal.number_value = 0;
+                struct Token rCurlyToken = createToken(RIGHT_CURLY, &sourceCode[i], 1, startLine, startColumn, literal);
+                appendTokenList(&tokens, rCurlyToken);
                 nextCharacter(sourceCode, &i, &line, &column);
                 continue;
             }
