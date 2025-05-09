@@ -56,6 +56,11 @@ void destroyNode(struct ASTNode *n) {
       case NODE_FUNCTION_DECLARATION:
         free(n->data.funcDeclaration.name);
         destroyAST(n->data.funcDeclaration.codeBlock);
+        free(n->data.funcDeclaration.codeBlock);
+        break;
+
+      case NODE_FUNCTION_CALL:
+        free(n->data.funcCall.name);
         break;
 
       default:

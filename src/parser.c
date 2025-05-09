@@ -53,6 +53,7 @@ struct ASTNode* parsePrimary(struct TokenList* tokens, size_t* index) {
 
     // CANNOT PARSE PRIMARY
     // LOG ERROR
+    printf("error parsing primary");
     return NULL;
 }
 
@@ -254,6 +255,7 @@ struct ASTNode* parseFunctionCall(struct TokenList* tokens, size_t* index) {
             tokens->data[*index].line, tokens->data[*index].column);
         exit(1);
     }
+    (*index)++;
 
     struct ASTNode* node = malloc(sizeof(struct ASTNode));
     node->line = token.line;
