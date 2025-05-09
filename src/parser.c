@@ -185,8 +185,98 @@ struct ASTNode* parseAssignment(struct TokenList* tokens, size_t* index) {
     return node;
 }
 
+struct ASTNodeList* parseCodeBlock(struct TokenList* tokens, size_t* index) {
+    // check for '{'
+    if (tokens->data[*index].tokenType != LEFT_CURLY) {
+        printf("Expected '{' at line %zu, column %zu\n", tokens->data[*index].line, 
+            tokens->data[*index].column);
+        exit(1);
+    }
+    (*index)++;
+
+    struct ASTNodeList* ast = malloc(sizeof(struct ASTNodeList));
+    initAST(ast);
+
+    while (tokens->data[*index].tokenType != RIGHT_CURLY)
+    {
+        if (tokens->data[*index].tokenType == END_OF_FILE) {
+            printf("Expected '}' to close code block, reached end of file instead.\n");
+            exit(1);
+        }
+        struct ASTNode* statement = parseStatement(tokens, index);
+        appendAST(ast, statement);
+    }
+    (*index)++;
+    
+    return ast;
+}
+
+struct ASTNode* parseFunctionDeclaration(struct TokenList* tokens, size_t* index) {
+    (*index)++; // skip "fn" keyword
+    struct Token token = tokens->data[*index];
+
+    // get function name
+    char* name = strndup(token.lexeme, token.length);
+    (*index)++;
+
+    // left + right paren, change later to handle params
+    (*index)++;
+    (*index)++;
+
+    // get code block
+    struct ASTNodeList* codeBlock = parseCodeBlock(tokens, index);
+
+    struct ASTNode* node = malloc(sizeof(struct ASTNode));
+    node->line = token.line;
+    node->column = token.column;
+    node->nodeType = NODE_FUNCTION_DECLARATION;
+    node->data.funcDeclaration.name = name;
+    node->data.funcDeclaration.codeBlock = codeBlock;
+
+    return node;
+}
+
+struct ASTNode* parseFunctionCall(struct TokenList* tokens, size_t* index) {
+    struct Token token = tokens->data[*index];
+    (*index)++;
+
+    char* funcName = strndup(token.lexeme, token.length);
+
+    // ( paren
+    (*index)++;
+
+    // change logic here for arguments, now assume immediate ) for function call
+    (*index)++;
+
+    // semi colon
+    if (tokens->data[*index].tokenType != SEMICOLON) {
+        printf("Expected ';' at line %zu, column %zu.\n", 
+            tokens->data[*index].line, tokens->data[*index].column);
+        exit(1);
+    }
+
+    struct ASTNode* node = malloc(sizeof(struct ASTNode));
+    node->line = token.line;
+    node->column = token.column;
+    node->nodeType = NODE_FUNCTION_CALL;
+    node->data.funcCall.name = funcName;
+
+    return node;
+}
+
 struct ASTNode* parseStatement(struct TokenList* tokens, size_t* index) {
     enum TokenType tokenType = tokens->data[*index].tokenType;
+
+    // FUNCTION DECLARATION
+    if (tokenType == FUNCTION_DECLARATION) {
+        return parseFunctionDeclaration(tokens, index);
+    }
+
+    // FUNCTION CALL
+    if (tokenType == IDENTIFIER && 
+            tokens->data[*index + 1].tokenType == LEFT_PAREN) {
+        return parseFunctionCall(tokens, index);
+    }
 
     // DECLARATION
     if (tokenType == TEXT_TYPE || tokenType == NUMBER_TYPE) {
