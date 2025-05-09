@@ -12,6 +12,10 @@ enum ASTNodeType {
     NODE_VARIABLE_DECLARATION,
     NODE_VARIABLE_ASSIGN,
     NODE_VARIABLE_REFERENCE,
+
+    // FUNCTION OPERATIONS
+    NODE_FUNCTION_DECLARATION,
+    NODE_FUNCTION_CALL
 };
 
 struct ASTNode;
@@ -32,6 +36,17 @@ struct ASTVariableAssignment {
     struct ASTNode* node;
 };
 
+struct ASTFunctionDeclaration {
+    char*               name;
+    // add function parameters
+    struct ASTNodeList* codeBlock;
+};
+
+struct ASTFunctionCall {
+    char*           name;
+    // add function arguments here
+};
+
 struct ASTNode {
     enum ASTNodeType nodeType;
     size_t line;
@@ -42,6 +57,8 @@ struct ASTNode {
         struct  ASTBinaryOperation binary;
         struct  ASTVariableDeclaration varDeclaration;
         struct  ASTVariableAssignment varAssignment;
+        struct  ASTFunctionDeclaration funcDeclaration;
+        struct  ASTFunctionCall funcCall;
     } data;
 };
 

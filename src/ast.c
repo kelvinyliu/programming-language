@@ -53,6 +53,11 @@ void destroyNode(struct ASTNode *n) {
         destroyNode(n->data.varAssignment.node);
         break;
 
+      case NODE_FUNCTION_DECLARATION:
+        free(n->data.funcDeclaration.name);
+        destroyAST(n->data.funcDeclaration.codeBlock);
+        break;
+
       default:
         // others
         break;
