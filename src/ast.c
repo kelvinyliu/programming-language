@@ -29,6 +29,14 @@ void destroyNode(struct ASTNode *n) {
         // textValue was strdup'ed in parsePrimary
         free(n->data.textValue);
         break;
+      
+      case NODE_BOOL_TRUE:
+        free(n->data.textValue);
+        break;
+
+      case NODE_BOOL_FALSE:
+        free(n->data.textValue);
+        break;
 
       case NODE_VARIABLE_REFERENCE:
         // same: strdup'ed name
