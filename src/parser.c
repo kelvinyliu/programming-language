@@ -240,6 +240,36 @@ struct ASTNode* parseFunctionDeclaration(struct TokenList* tokens, size_t* index
 
     // left + right paren, change later to handle params
     (*index)++;
+    size_t parameterCounter = 0;
+    struct Parameter* params = NULL;
+    while (tokens->data[*index].tokenType != RIGHT_PAREN) {
+        enum TokenType dataType = tokens->data[*index].tokenType;
+        if (dataType != NUMBER_TYPE &&
+                dataType != TEXT_TYPE &&
+                dataType != BOOLEAN_TYPE) {
+            printf("Declaring function parameters must be in the form of datatype variable_name, line %zu\n", token.line);
+            exit(1);
+        }
+        (*index)++;
+        struct Token parameterToken = tokens->data[*index];
+        if (parameterToken.tokenType != IDENTIFIER) {
+            printf("Expected parameter name on line %zu\n", token.line);
+            exit(1);
+        } 
+
+        struct Parameter param;
+        param.dataType = dataType;
+        param.name = strndup(parameterToken.lexeme, parameterToken.length);
+
+        params = realloc(params, sizeof(struct Parameter) * (parameterCounter+1));
+        params[parameterCounter] = param;
+        parameterCounter++;
+
+        (*index)++;
+        if (tokens->data[*index].tokenType == COMMA) {
+            (*index)++;
+        }
+    }
     (*index)++;
 
     // get code block
@@ -250,6 +280,8 @@ struct ASTNode* parseFunctionDeclaration(struct TokenList* tokens, size_t* index
     node->column = token.column;
     node->nodeType = NODE_FUNCTION_DECLARATION;
     node->data.funcDeclaration.name = name;
+    node->data.funcDeclaration.parameters = params;
+    node->data.funcDeclaration.parameterCount = parameterCounter;
     node->data.funcDeclaration.codeBlock = codeBlock;
 
     return node;

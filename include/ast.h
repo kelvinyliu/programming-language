@@ -21,6 +21,11 @@ enum ASTNodeType {
     NODE_FUNCTION_CALL
 };
 
+struct Parameter {
+    enum TokenType dataType;
+    char* name;
+};
+
 struct ASTNode;
 
 struct ASTBinaryOperation {
@@ -42,7 +47,8 @@ struct ASTVariableAssignment {
 
 struct ASTFunctionDeclaration {
     char*               name;
-    // add function parameters
+    struct Parameter* parameters;
+    size_t parameterCount;
     struct ASTNodeList* codeBlock;
 };
 

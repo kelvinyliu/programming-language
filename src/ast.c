@@ -59,6 +59,14 @@ void destroyNode(struct ASTNode *n) {
 
       case NODE_FUNCTION_DECLARATION:
         free(n->data.funcDeclaration.name);
+
+        if (n->data.funcDeclaration.parameters && n->data.funcDeclaration.parameterCount > 0) {
+          for (size_t i = 0; i < n->data.funcDeclaration.parameterCount; i++) {
+            free(n->data.funcDeclaration.parameters[i].name);
+          }
+          free(n->data.funcDeclaration.parameters);
+        }
+
         destroyAST(n->data.funcDeclaration.codeBlock);
         free(n->data.funcDeclaration.codeBlock);
         break;
