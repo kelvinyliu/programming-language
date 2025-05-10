@@ -39,7 +39,7 @@ struct Environment {
 void createEnvironment(struct Environment* env);
 void freeEnvironment(struct Environment* env);
 
-struct Value getValue(struct Environment* env, const char* key);
+struct Value* getValue(struct Environment* env, const char* key);
 void setValue(struct Environment* env, const char* key, struct Value val);
 
 // Evaluation

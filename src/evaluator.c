@@ -44,19 +44,18 @@ void freeEnvironment(struct Environment* env) {
     env->bucket = NULL;
 }
 
-struct Value getValue(struct Environment* env, const char* key) {
+struct Value* getValue(struct Environment* env, const char* key) {
     unsigned long h = hash(key) % env->bucket_count;
     struct Entry* e = env->bucket[h];
 
     while (e) {
         if (strcmp(e->key, key) == 0) {
-            return e->value;
+            return &e->value;
         }
         // if collision
         e = e->next;
     }
-    printf("Trying to retrieve value from key which does not exist in environment.\n");
-    exit(1);
+    return NULL;
 }
 
 void setValue(struct Environment* env, const char* key, struct Value val) {
@@ -121,7 +120,7 @@ struct Value evaluateASTNode(const struct ASTNode* node, struct Environment* env
         case NODE_BOOL_LITERAL:
             return createBoolValue(node->data.boolValue);
         case NODE_VARIABLE_REFERENCE:
-            return getValue(env, node->data.textValue);
+            return *getValue(env, node->data.textValue);
         case NODE_BINARY_OPERATION: 
             {
                 struct Value left = evaluateASTNode(node->data.binary.leftSide, env);
@@ -163,6 +162,12 @@ struct Value evaluateASTNode(const struct ASTNode* node, struct Environment* env
             }
         case NODE_VARIABLE_DECLARATION: 
             {
+                struct Value* previousData = getValue(env, node->data.varDeclaration.name);
+                // if get data does exists
+                if (previousData) {
+                    printf("Variable with name '%s' already exists, therefore cannot declare with same name. Line %zu\n", node->data.varDeclaration.name, node->line);
+                    exit(1);
+                }
                 struct Value val = evaluateASTNode(node->data.varDeclaration.node, env);
                 // val.type matches node->nodeType then set, else type error.
                 bool typeMatch = doesDataTypeMatchesData(val.type, node->data.varDeclaration.dataType);
@@ -170,12 +175,24 @@ struct Value evaluateASTNode(const struct ASTNode* node, struct Environment* env
                     printf("Cannot assign variable at line %zu, data and type does not match.\n", node->line);
                     exit(1);
                 }
+
                 setValue(env, node->data.varDeclaration.name, val);
                 return val;
             }
         case NODE_VARIABLE_ASSIGN:
             {
+                struct Value* previousData = getValue(env, node->data.varAssignment.name);
+                // if get data does not exist
+                if (!previousData) {
+                    printf("Variable reference on line %zu does not exist, therefore cannot assign value.\n", node->line);
+                    exit(1);
+                }
                 struct Value val = evaluateASTNode(node->data.varAssignment.node, env);
+                // if datatype does not match
+                if (previousData->type != val.type) {
+                    printf("Assigning variable datatype does not match on line %zu.\n", node->line);
+                    exit(1);
+                }
                 setValue(env, node->data.varAssignment.name, val);
                 return val;
             }
@@ -187,8 +204,11 @@ struct Value evaluateASTNode(const struct ASTNode* node, struct Environment* env
             }
         case NODE_FUNCTION_CALL:
             {
-                struct Value val = getValue(env, node->data.funcCall.name);
-                evaluateAST(val.data.nodeList, env);
+                struct Value val = *getValue(env, node->data.funcCall.name);
+                struct Environment scopeEnv;
+                createEnvironment(&scopeEnv);
+                evaluateAST(val.data.nodeList, &scopeEnv);
+                freeEnvironment(&scopeEnv);
                 // could change later to get a return
                 return createNumberValue(0);
 
