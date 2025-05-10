@@ -151,6 +151,8 @@ struct Value evaluateASTNode(const struct ASTNode* node, struct Environment* env
                                 res = leftNum / rightNum;
                                 break;
                             }
+                        case '=':
+                            return createBoolValue(leftNum == rightNum);
                         default:
                             printf("Unknown operator.\n");
                             exit(1);
