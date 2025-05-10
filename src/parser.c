@@ -74,7 +74,7 @@ struct ASTNode* parseFactor(struct TokenList* tokens, size_t* index) {
     // if has parens, parse entire; else its a literal or identifier.
     if (token.tokenType == LEFT_PAREN) {
         (*index)++;
-        struct ASTNode* subExpr = parseExpression(tokens,index);
+        struct ASTNode* subExpr = parseTopLevel(tokens,index);
         if (tokens->data[*index].tokenType != RIGHT_PAREN) {
             // ERROR;
             printf("Expected ')'\n");
@@ -146,7 +146,7 @@ struct ASTNode* parseDeclaration(struct TokenList* tokens, size_t* index) {
     }
     (*index)++;
     
-    struct ASTNode* init = parseExpression(tokens, index);
+    struct ASTNode* init = parseTopLevel(tokens, index);
 
     if (tokens->data[*index].tokenType != SEMICOLON) {
         printf("Expected ';'.\n");
@@ -185,7 +185,7 @@ struct ASTNode* parseAssignment(struct TokenList* tokens, size_t* index) {
     }
     (*index)++;
 
-    struct ASTNode* assignValue = parseExpression(tokens, index);
+    struct ASTNode* assignValue = parseTopLevel(tokens, index);
 
     if (tokens->data[*index].tokenType != SEMICOLON) {
         printf("Expected ';'\n");
@@ -299,7 +299,7 @@ struct ASTNode* parseFunctionCall(struct TokenList* tokens, size_t* index) {
     size_t argumentCounter = 0;
     struct ASTNode** arguments = NULL;
     while (tokens->data[*index].tokenType != RIGHT_PAREN) {
-        struct ASTNode* arg = parseExpression(tokens, index);
+        struct ASTNode* arg = parseTopLevel(tokens, index);
 
         arguments = realloc(arguments, sizeof(struct ASTNode*) * (argumentCounter + 1));
         arguments[argumentCounter] = arg;
@@ -330,6 +330,26 @@ struct ASTNode* parseFunctionCall(struct TokenList* tokens, size_t* index) {
     return node;
 }
 
+// LEFT == RIGHT
+struct ASTNode* parseEquality(struct TokenList* tokens, size_t* index) {
+    struct ASTNode* left = parseExpression(tokens, index);
+
+    while (tokens->data[*index].tokenType == EQUALITY_OPERATOR) {
+        struct Token token = tokens->data[*index];
+        (*index)++;
+        struct ASTNode* right = parseExpression(tokens, index);
+        left = createBinaryNode(token.lexeme[0], left, right, token.line, token.column);
+    }
+
+    return left;
+}
+
+
+// recursive descent top level call
+struct ASTNode* parseTopLevel(struct TokenList* tokens, size_t* index) {
+    return parseEquality(tokens, index);
+}
+
 struct ASTNode* parseStatement(struct TokenList* tokens, size_t* index) {
     enum TokenType tokenType = tokens->data[*index].tokenType;
 
@@ -355,7 +375,7 @@ struct ASTNode* parseStatement(struct TokenList* tokens, size_t* index) {
     }
 
     // EXPRESSION
-    struct ASTNode* expression = parseExpression(tokens, index);
+    struct ASTNode* expression = parseTopLevel(tokens, index);
     if (tokens->data[*index].tokenType != SEMICOLON) {
         printf("Expected ';'.\n");
         exit(1);
