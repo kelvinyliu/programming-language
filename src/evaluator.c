@@ -164,6 +164,12 @@ struct Value evaluateASTNode(const struct ASTNode* node, struct Environment* env
         case NODE_VARIABLE_DECLARATION: 
             {
                 struct Value val = evaluateASTNode(node->data.varDeclaration.node, env);
+                // val.type matches node->nodeType then set, else type error.
+                bool typeMatch = doesDataTypeMatchesData(val.type, node->data.varDeclaration.dataType);
+                if (!typeMatch) {
+                    printf("Cannot assign variable at line %zu, data and type does not match.\n", node->line);
+                    exit(1);
+                }
                 setValue(env, node->data.varDeclaration.name, val);
                 return val;
             }
