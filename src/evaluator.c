@@ -206,8 +206,26 @@ struct Value evaluateASTNode(const struct ASTNode* node, struct Environment* env
         case NODE_FUNCTION_CALL:
             {
                 struct Value val = *getValue(env, node->data.funcCall.name);
+                struct ASTFunctionDeclaration funcDeclaration = val.originNode->data.funcDeclaration;
+
+                if (funcDeclaration.parameterCount != node->data.funcCall.argumentCount) {
+                    printf("Argument count does not match. Expected %zu, got %zu. Line %zu\n", 
+                        funcDeclaration.parameterCount, node->data.funcCall.argumentCount, node->line);
+                    exit(1);
+                }
+                
                 struct Environment scopeEnv;
                 createEnvironment(&scopeEnv);
+
+                for (size_t i = 0; i < node->data.funcCall.argumentCount; i++) {
+                    struct Value argVal = evaluateASTNode(node->data.funcCall.arguments[i], env);
+                    if (!doesDataTypeMatchesData(argVal.type, funcDeclaration.parameters[i].dataType)) {
+                        printf("Datatype of argument does not match relative parameter datatype, line %zu\n", node->line);
+                        exit(1);
+                    }
+                    setValue(&scopeEnv, funcDeclaration.parameters[i].name, argVal);
+                }
+
                 evaluateAST(val.data.nodeList, &scopeEnv);
                 freeEnvironment(&scopeEnv);
                 // could change later to get a return
