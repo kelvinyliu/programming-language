@@ -3,7 +3,7 @@
 #include <stdbool.h>
 #include <string.h>
 
-struct ASTNode* createBinaryNode(char op, struct ASTNode* left, struct ASTNode* right, size_t line, size_t column) {
+struct ASTNode* createBinaryNode(enum BinaryOperatorTypes op, struct ASTNode* left, struct ASTNode* right, size_t line, size_t column) {
     struct ASTNode* n = malloc(sizeof(struct ASTNode));
     n->nodeType = NODE_BINARY_OPERATION;
     n->line = line;
@@ -93,7 +93,19 @@ struct ASTNode* parseTerm(struct TokenList* tokens, size_t* index) {
     while (true) {
         struct Token token = tokens->data[*index];
         if (token.tokenType == STAR || token.tokenType == SLASH) {
-            char op = token.lexeme[0];
+            enum BinaryOperatorTypes op;
+            switch (token.tokenType) {
+                case STAR:
+                    op = BIN_OP_STAR;
+                    break;
+                case SLASH:
+                    op = BIN_OP_SLASH;
+                    break;
+                default:
+                    printf("Could not identify binary operator. Line %zu\n", token.line);
+                    exit(1);
+                    
+            }
             (*index)++; 
             struct ASTNode* rightSide = parseFactor(tokens, index);
             
@@ -113,7 +125,19 @@ struct ASTNode* parseExpression(struct TokenList* tokens, size_t* index) {
     while (true) {
         struct Token token = tokens->data[*index];
         if (token.tokenType == PLUS || token.tokenType == MINUS) {
-            char op = token.lexeme[0];
+            enum BinaryOperatorTypes op;
+            switch (token.tokenType) {
+                case PLUS:
+                    op = BIN_OP_PLUS;
+                    break;
+                case MINUS:
+                    op = BIN_OP_MINUS;
+                    break;
+                default:
+                    printf("Could not identify binary operator. Line %zu\n", token.line);
+                    exit(1);
+
+            }
             (*index)++;
             struct ASTNode* rightSide = parseTerm(tokens, index);
             size_t line = token.line;
@@ -149,7 +173,7 @@ struct ASTNode* parseDeclaration(struct TokenList* tokens, size_t* index) {
     struct ASTNode* init = parseTopLevel(tokens, index);
 
     if (tokens->data[*index].tokenType != SEMICOLON) {
-        printf("Expected ';'.\n");
+        printf("Expected ';'. Line %zu\n", token.line);
         exit(1);
     }
     (*index)++;
@@ -332,16 +356,54 @@ struct ASTNode* parseFunctionCall(struct TokenList* tokens, size_t* index) {
 
 // LEFT == RIGHT
 struct ASTNode* parseEquality(struct TokenList* tokens, size_t* index) {
-    struct ASTNode* left = parseExpression(tokens, index);
+    struct ASTNode* left = parseComparsion(tokens, index);
 
     while (tokens->data[*index].tokenType == EQUALITY_OPERATOR) {
         struct Token token = tokens->data[*index];
         (*index)++;
-        struct ASTNode* right = parseExpression(tokens, index);
-        left = createBinaryNode(token.lexeme[0], left, right, token.line, token.column);
+        struct ASTNode* right = parseComparsion(tokens, index);
+        left = createBinaryNode(BIN_OP_EQUALITY, left, right, token.line, token.column);
     }
 
     return left;
+}
+
+struct ASTNode* parseComparsion(struct TokenList* tokens, size_t* index) {
+    struct ASTNode* left = parseExpression(tokens, index);
+
+    while (true) {
+        enum TokenType type = tokens->data[*index].tokenType;
+        enum BinaryOperatorTypes op;
+
+        switch (type) {
+            case LESS_THAN:
+                op = BIN_OP_LESS;
+                break;
+            case MORE_THAN:
+                op = BIN_OP_GREATER;
+                break;
+            case LESSER_EQUAL:
+                op = BIN_OP_LESSER_EQUAL;
+                break;
+            case GREATER_EQUAL:
+                op = BIN_OP_GREATER_EQUAL;
+                break;
+            default:
+                return left;
+        }
+
+        if (type == LESS_THAN || type == MORE_THAN || type == LESSER_EQUAL || type == GREATER_EQUAL) {
+            struct Token token = tokens->data[*index];
+            (*index)++;
+
+            struct ASTNode* right = parseExpression(tokens, index);
+            left = createBinaryNode(op, left, right, token.line, token.column);
+        } else {
+            break;
+        }
+    }
+    return left;
+
 }
 
 
@@ -377,7 +439,7 @@ struct ASTNode* parseStatement(struct TokenList* tokens, size_t* index) {
     // EXPRESSION
     struct ASTNode* expression = parseTopLevel(tokens, index);
     if (tokens->data[*index].tokenType != SEMICOLON) {
-        printf("Expected ';'.\n");
+        printf("Expectedb ';'. Line %zu\n", tokens->data[*index].line);
         exit(1);
     }
     (*index)++;
