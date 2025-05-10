@@ -238,7 +238,7 @@ struct ASTNode* parseFunctionDeclaration(struct TokenList* tokens, size_t* index
     char* name = strndup(token.lexeme, token.length);
     (*index)++;
 
-    // left + right paren, change later to handle params
+    // handle params
     (*index)++;
     size_t parameterCounter = 0;
     struct Parameter* params = NULL;
@@ -296,7 +296,19 @@ struct ASTNode* parseFunctionCall(struct TokenList* tokens, size_t* index) {
     // ( paren
     (*index)++;
 
-    // change logic here for arguments, now assume immediate ) for function call
+    size_t argumentCounter = 0;
+    struct ASTNode** arguments = NULL;
+    while (tokens->data[*index].tokenType != RIGHT_PAREN) {
+        struct ASTNode* arg = parseExpression(tokens, index);
+
+        arguments = realloc(arguments, sizeof(struct ASTNode*) * (argumentCounter + 1));
+        arguments[argumentCounter] = arg;
+        argumentCounter++;
+
+        if (tokens->data[*index].tokenType == COMMA) {
+            (*index)++;
+        }
+    }
     (*index)++;
 
     // semi colon
@@ -311,6 +323,8 @@ struct ASTNode* parseFunctionCall(struct TokenList* tokens, size_t* index) {
     node->line = token.line;
     node->column = token.column;
     node->nodeType = NODE_FUNCTION_CALL;
+    node->data.funcCall.argumentCount = argumentCounter;
+    node->data.funcCall.arguments = arguments;
     node->data.funcCall.name = funcName;
 
     return node;
