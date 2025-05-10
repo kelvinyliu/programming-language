@@ -73,6 +73,12 @@ void destroyNode(struct ASTNode *n) {
 
       case NODE_FUNCTION_CALL:
         free(n->data.funcCall.name);
+
+        for (size_t i = 0; i < n->data.funcCall.argumentCount; i++) {
+          destroyNode(n->data.funcCall.arguments[i]);
+        }
+        
+        free(n->data.funcCall.arguments);
         break;
 
       default:

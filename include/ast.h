@@ -53,8 +53,9 @@ struct ASTFunctionDeclaration {
 };
 
 struct ASTFunctionCall {
-    char*           name;
-    // add function arguments here
+    char*               name;
+    struct ASTNode**    arguments;
+    size_t              argumentCount;
 };
 
 struct ASTNode {
