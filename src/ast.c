@@ -30,12 +30,8 @@ void destroyNode(struct ASTNode *n) {
         free(n->data.textValue);
         break;
       
-      case NODE_BOOL_TRUE:
-        free(n->data.textValue);
-        break;
-
-      case NODE_BOOL_FALSE:
-        free(n->data.textValue);
+      case NODE_BOOL_LITERAL:
+        // NOTHING
         break;
 
       case NODE_VARIABLE_REFERENCE:

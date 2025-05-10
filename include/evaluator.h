@@ -6,8 +6,7 @@ enum ValueType {
     VALUE_TEXT,
     VALUE_FUNCTION,
     VALUE_FUNCTION_RETURN,
-    VALUE_TRUE,
-    VALUE_FALSE,
+    VALUE_BOOL,
 };
 
 struct Value {
@@ -15,6 +14,7 @@ struct Value {
     union {
         double  number;
         char*   text;
+        bool    boolVal;
         struct ASTNodeList* nodeList; 
     } data;
 };
@@ -44,5 +44,6 @@ void setValue(struct Environment* env, const char* key, struct Value val);
 // Evaluation
 struct Value createNumberValue(double num);
 struct Value createTextValue(char* str);
+struct Value createBoolValue(bool state);
 struct Value evaluateASTNode(const struct ASTNode* node, struct Environment* env);
 void evaluateAST(const struct ASTNodeList* astList, struct Environment* env);

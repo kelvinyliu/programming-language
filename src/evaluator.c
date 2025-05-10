@@ -1,4 +1,5 @@
 #include "../include/evaluator.h"
+#include "../include/typeHelper.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
@@ -99,8 +100,8 @@ struct Value createTextValue(char* str) {
 
 struct Value createBoolValue(bool state) {
     struct Value val;
-    val.type = state ? VALUE_TRUE : VALUE_FALSE;
-    val.data.text = state ? "true" : "false";
+    val.type = VALUE_BOOL;
+    val.data.boolVal = state ? true : false;
     return val;
 }
 
@@ -117,10 +118,8 @@ struct Value evaluateASTNode(const struct ASTNode* node, struct Environment* env
             return createNumberValue(node->data.numberValue);
         case NODE_TEXT_LITERAL:
             return createTextValue(strdup(node->data.textValue));
-        case NODE_BOOL_FALSE:
-            return createBoolValue(false);
-        case NODE_BOOL_TRUE:
-            return createBoolValue(true);
+        case NODE_BOOL_LITERAL:
+            return createBoolValue(node->data.boolValue);
         case NODE_VARIABLE_REFERENCE:
             return getValue(env, node->data.textValue);
         case NODE_BINARY_OPERATION: 
@@ -203,8 +202,10 @@ void evaluateAST(const struct ASTNodeList* astList, struct Environment* env) {
         if (node->nodeType != NODE_VARIABLE_DECLARATION && node->nodeType != NODE_VARIABLE_ASSIGN && node->nodeType != NODE_FUNCTION_CALL) {
             if (val.type == VALUE_NUMBER) {
                 printf("%g\n", val.data.number);
-            } else if (val.type == VALUE_TEXT || val.type == VALUE_FALSE || val.type == VALUE_TRUE) {
+            } else if (val.type == VALUE_TEXT) {
                 printf("%s\n", val.data.text);
+            } else if (val.type == VALUE_BOOL) {
+                printf("%s\n", val.data.boolVal ? "true" : "false");
             }
         }
     }

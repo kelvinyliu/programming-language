@@ -55,8 +55,8 @@ struct ASTNode* parsePrimary(struct TokenList* tokens, size_t* index) {
         struct ASTNode* node = malloc(sizeof(struct ASTNode));
         node->line = token->line;
         node->column = token->column;
-        node->nodeType = token->tokenType == FALSE ? NODE_BOOL_FALSE : NODE_BOOL_TRUE;
-        node->data.textValue = strndup(token->lexeme, token->length);
+        node->nodeType = NODE_BOOL_LITERAL;
+        node->data.boolValue = token->tokenType == FALSE ? false : true;
 
         (*index)++;
         return node;
@@ -166,6 +166,13 @@ struct ASTNode* parseDeclaration(struct TokenList* tokens, size_t* index) {
 
 struct ASTNode* parseAssignment(struct TokenList* tokens, size_t* index) {
     struct Token token = tokens->data[*index];
+
+    // to assign variable correctly, the token datatype has to match the correct literal
+    // this would involve many if statements, would creating a method for this be better as it could be 
+    // used multiple times later?
+
+    // encounter error with statements such as number x = 1 + 2; <-- expression but expects a number literal
+    // solution puts the datatype check in evaluator.
     
     // get var name
     char* name = strndup(token.lexeme, token.length);
