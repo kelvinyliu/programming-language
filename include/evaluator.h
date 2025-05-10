@@ -1,5 +1,6 @@
 #pragma once
 #include "ast.h"
+#include <stdbool.h>
 
 enum ValueType {
     VALUE_NUMBER,

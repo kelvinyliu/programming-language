@@ -1,5 +1,7 @@
 #pragma once
 #include <stdlib.h>
+#include "tokeniser.h"
+#include <stdbool.h>
 
 enum ASTNodeType {
     // LITERALS
@@ -29,6 +31,7 @@ struct ASTBinaryOperation {
 
 struct ASTVariableDeclaration {
     char*           name;
+    enum TokenType  dataType;
     struct ASTNode* node;
 };
 
@@ -55,6 +58,7 @@ struct ASTNode {
     union {
         double  numberValue;
         char*   textValue;
+        bool    boolValue;
         struct  ASTBinaryOperation binary;
         struct  ASTVariableDeclaration varDeclaration;
         struct  ASTVariableAssignment varAssignment;

@@ -127,9 +127,8 @@ struct ASTNode* parseExpression(struct TokenList* tokens, size_t* index) {
 }
 
 struct ASTNode* parseDeclaration(struct TokenList* tokens, size_t* index) {
-    // skip parsing datatype for now
+    enum TokenType dataType = tokens->data[*index].tokenType;
     (*index)++;
-
     struct Token token = tokens->data[*index];
     if (token.tokenType != IDENTIFIER) {
         // ERROR;
@@ -160,6 +159,7 @@ struct ASTNode* parseDeclaration(struct TokenList* tokens, size_t* index) {
     node->column = token.column;
     node->nodeType = NODE_VARIABLE_DECLARATION;
     node->data.varDeclaration.name = name;
+    node->data.varDeclaration.dataType = dataType;
     node->data.varDeclaration.node = init;
     return node;
 }
