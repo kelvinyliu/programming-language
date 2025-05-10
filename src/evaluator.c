@@ -125,7 +125,7 @@ struct Value evaluateASTNode(const struct ASTNode* node, struct Environment* env
             {
                 struct Value left = evaluateASTNode(node->data.binary.leftSide, env);
                 struct Value right = evaluateASTNode(node->data.binary.rightSide, env);
-                char op = node->data.binary.operationChar;
+                enum BinaryOperatorTypes op = node->data.binary.operationChar;
 
                 if (left.type == VALUE_NUMBER && right.type == VALUE_NUMBER) {
                     double leftNum = left.data.number;
@@ -133,16 +133,16 @@ struct Value evaluateASTNode(const struct ASTNode* node, struct Environment* env
 
                     double res;
                     switch (op) {
-                        case '+': 
+                        case BIN_OP_PLUS: 
                             res = leftNum + rightNum;
                             break;
-                        case '-':
+                        case BIN_OP_MINUS:
                             res = leftNum - rightNum;
                             break;
-                        case '*':
+                        case BIN_OP_STAR:
                             res = leftNum * rightNum;
                             break;
-                        case '/':
+                        case BIN_OP_SLASH:
                             {
                                 if (rightNum == 0) {
                                     printf("Cannot divide by zero. line %zu column %zu\n", node->line, node->column);
@@ -151,8 +151,16 @@ struct Value evaluateASTNode(const struct ASTNode* node, struct Environment* env
                                 res = leftNum / rightNum;
                                 break;
                             }
-                        case '=':
+                        case BIN_OP_EQUALITY:
                             return createBoolValue(leftNum == rightNum);
+                        case BIN_OP_LESS:
+                            return createBoolValue(leftNum < rightNum);
+                        case BIN_OP_GREATER:
+                            return createBoolValue(leftNum > rightNum);
+                        case BIN_OP_LESSER_EQUAL:
+                            return createBoolValue(leftNum <= rightNum);
+                        case BIN_OP_GREATER_EQUAL:
+                            return createBoolValue(leftNum >= rightNum);
                         default:
                             printf("Unknown operator.\n");
                             exit(1);
