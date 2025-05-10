@@ -199,6 +199,7 @@ struct Value evaluateASTNode(const struct ASTNode* node, struct Environment* env
         case NODE_FUNCTION_DECLARATION:
             {
                 struct Value val = createFunctionValue(node->data.funcDeclaration.codeBlock);
+                val.originNode = node;
                 setValue(env, node->data.funcDeclaration.name, val);
                 return val;
             }

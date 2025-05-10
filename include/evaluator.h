@@ -12,6 +12,7 @@ enum ValueType {
 
 struct Value {
     enum ValueType type;
+    const struct ASTNode* originNode;
     union {
         double  number;
         char*   text;
