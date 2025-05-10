@@ -21,6 +21,11 @@ enum ASTNodeType {
     NODE_FUNCTION_CALL
 };
 
+enum BinaryOperatorTypes {
+    BIN_OP_PLUS, BIN_OP_MINUS, BIN_OP_STAR, BIN_OP_SLASH, BIN_OP_EQUALITY,
+    BIN_OP_LESS, BIN_OP_GREATER, BIN_OP_LESSER_EQUAL, BIN_OP_GREATER_EQUAL
+};
+
 struct Parameter {
     enum TokenType dataType;
     char* name;
@@ -29,9 +34,9 @@ struct Parameter {
 struct ASTNode;
 
 struct ASTBinaryOperation {
-    char            operationChar;
-    struct ASTNode* leftSide;
-    struct ASTNode* rightSide;
+    enum BinaryOperatorTypes    operationChar;
+    struct ASTNode*             leftSide;
+    struct ASTNode*             rightSide;
 };
 
 struct ASTVariableDeclaration {
