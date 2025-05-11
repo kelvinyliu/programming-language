@@ -242,6 +242,19 @@ struct Value evaluateASTNode(const struct ASTNode* node, struct Environment* env
                 return createNumberValue(0);
 
             }
+        case NODE_IF_STATEMENT:
+            {
+                // get value of condition, should be boolean. If true then execute code block.
+                struct Value val = evaluateASTNode(node->data.ifStatement.condition, env);
+                if (val.type != VALUE_BOOL) {
+                    printf("Condition in if statement should have a boolean value, line %zu\n", node->line);
+                    exit(1);
+                }
+                if (val.data.boolVal) {
+                    evaluateAST(node->data.ifStatement.conditionTrueBlock, env);
+                }
+                return createNumberValue(0);
+            }
         default:
             printf("Unhandled node.\n");
             exit(1);
@@ -254,7 +267,7 @@ void evaluateAST(const struct ASTNodeList* astList, struct Environment* env) {
         struct Value val = evaluateASTNode(node, env);
 
         // TEMP: print method without language builtins.
-        if (node->nodeType != NODE_VARIABLE_DECLARATION && node->nodeType != NODE_VARIABLE_ASSIGN && node->nodeType != NODE_FUNCTION_CALL) {
+        if (node->nodeType == NODE_VARIABLE_REFERENCE) {
             if (val.type == VALUE_NUMBER) {
                 printf("%g\n", val.data.number);
             } else if (val.type == VALUE_TEXT) {
