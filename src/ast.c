@@ -80,6 +80,11 @@ void destroyNode(struct ASTNode *n) {
         
         free(n->data.funcCall.arguments);
         break;
+      
+      case NODE_IF_STATEMENT:
+        destroyNode(n->data.ifStatement.condition);
+        destroyAST(n->data.ifStatement.conditionTrueBlock);
+        free(n->data.ifStatement.conditionTrueBlock);
 
       default:
         // others
