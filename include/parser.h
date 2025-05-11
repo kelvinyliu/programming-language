@@ -11,6 +11,7 @@ struct ASTNode* parseEquality(struct TokenList* tokens, size_t* index);
 struct ASTNode* parseComparsion(struct TokenList* tokens, size_t* index);
 struct ASTNode* parseTopLevel(struct TokenList* tokens, size_t* index);
 struct ASTNode* parseIfStatement(struct TokenList* tokens, size_t* index);
+struct ASTNode* parseLoopStatement(struct TokenList* tokens, size_t* index);
 struct ASTNode* parseStatement(struct TokenList* tokens, size_t* index);
 struct ASTNode* parseDeclaration(struct TokenList* tokens, size_t* index);
 struct ASTNode* parseAssignment(struct TokenList* tokens, size_t* index);

@@ -440,6 +440,26 @@ struct ASTNode* parseIfStatement(struct TokenList* tokens, size_t* index) {
     return node;
 }
 
+struct ASTNode* parseLoopStatement(struct TokenList* tokens, size_t* index) {
+    struct Token token = tokens->data[*index];
+    (*index)++;
+
+    // get loop count
+    struct ASTNode* loopCount = parseTopLevel(tokens, index);
+
+    // get code block
+    struct ASTNodeList* codeBlock = parseCodeBlock(tokens, index);
+
+    struct ASTNode* node = malloc(sizeof(struct ASTNode));
+    node->line = token.line;
+    node->column = token.column;
+    node->nodeType = NODE_LOOP_STATEMENT;
+    node->data.loopStatement.loopCount = loopCount;
+    node->data.loopStatement.loopCodeBlock = codeBlock;
+
+    return node;
+}
+
 // recursive descent top level call
 struct ASTNode* parseTopLevel(struct TokenList* tokens, size_t* index) {
     return parseEquality(tokens, index);
@@ -462,6 +482,11 @@ struct ASTNode* parseStatement(struct TokenList* tokens, size_t* index) {
     // IF STATEMENT
     if (tokenType == IF_DECLARATION) {
         return parseIfStatement(tokens, index);
+    }
+
+    // LOOP STATEMENT
+    if (tokenType == LOOP_DECLARATION) {
+        return parseLoopStatement(tokens, index);
     }
 
     // DECLARATION
