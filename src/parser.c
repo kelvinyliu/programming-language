@@ -406,6 +406,39 @@ struct ASTNode* parseComparsion(struct TokenList* tokens, size_t* index) {
 
 }
 
+struct ASTNode* parseIfStatement(struct TokenList* tokens, size_t* index) {
+    struct Token token = tokens->data[*index];
+    (*index)++;
+
+    // check for left paren;
+    if (tokens->data[*index].tokenType != LEFT_PAREN) {
+        printf("Expected '(' to create if statement on line %zu\n", token.line);
+        exit(1);
+    }
+    (*index)++;
+    
+    // get condition
+    struct ASTNode* condition = parseTopLevel(tokens, index);
+    
+    // check for right paren
+    if (tokens->data[*index].tokenType != RIGHT_PAREN) {
+        printf("Expected ')' to end if statement condition on line %zu\n", token.line);
+        exit(1);
+    }
+    (*index)++;
+
+    // get code block
+    struct ASTNodeList* codeBlock = parseCodeBlock(tokens, index);
+
+    struct ASTNode* node = malloc(sizeof(struct ASTNode));
+    node->line = token.line;
+    node->column = token.column;
+    node->nodeType = NODE_IF_STATEMENT;
+    node->data.ifStatement.condition = condition;
+    node->data.ifStatement.conditionTrueBlock = codeBlock;
+
+    return node;
+}
 
 // recursive descent top level call
 struct ASTNode* parseTopLevel(struct TokenList* tokens, size_t* index) {
@@ -424,6 +457,11 @@ struct ASTNode* parseStatement(struct TokenList* tokens, size_t* index) {
     if (tokenType == IDENTIFIER && 
             tokens->data[*index + 1].tokenType == LEFT_PAREN) {
         return parseFunctionCall(tokens, index);
+    }
+
+    // IF STATEMENT
+    if (tokenType == IF_DECLARATION) {
+        return parseIfStatement(tokens, index);
     }
 
     // DECLARATION
