@@ -175,6 +175,8 @@ struct TokenList tokenise(const char* sourceCode) {
                 tokenType = FALSE;
             else if (textSize == 2 && strncmp(&sourceCode[startIndex], "fn", 2) == 0)    // function declaration keyword
                 tokenType = FUNCTION_DECLARATION;
+            else if (textSize == 2 && strncmp(&sourceCode[startIndex], "if", 2) == 0)
+                tokenType = IF_DECLARATION;
 
 
             union uLiteral literal;
