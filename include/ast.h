@@ -21,7 +21,10 @@ enum ASTNodeType {
     NODE_FUNCTION_CALL,
 
     // IF
-    NODE_IF_STATEMENT
+    NODE_IF_STATEMENT,
+
+    // LOOPS
+    NODE_LOOP_STATEMENT,
 };
 
 enum BinaryOperatorTypes {
@@ -71,6 +74,11 @@ struct ASTIfStatement {
     struct ASTNodeList* conditionTrueBlock;
 };
 
+struct ASTLoopStatement {
+    struct ASTNode* loopCount;
+    struct ASTNodeList* loopCodeBlock;
+};
+
 struct ASTNode {
     enum ASTNodeType nodeType;
     size_t line;
@@ -85,6 +93,7 @@ struct ASTNode {
         struct  ASTFunctionDeclaration funcDeclaration;
         struct  ASTFunctionCall funcCall;
         struct  ASTIfStatement ifStatement;
+        struct  ASTLoopStatement loopStatement;
     } data;
 };
 

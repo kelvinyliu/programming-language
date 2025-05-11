@@ -85,6 +85,13 @@ void destroyNode(struct ASTNode *n) {
         destroyNode(n->data.ifStatement.condition);
         destroyAST(n->data.ifStatement.conditionTrueBlock);
         free(n->data.ifStatement.conditionTrueBlock);
+        break;
+
+      case NODE_LOOP_STATEMENT:
+        destroyNode(n->data.loopStatement.loopCount);
+        destroyAST(n->data.loopStatement.loopCodeBlock);
+        free(n->data.loopStatement.loopCodeBlock);
+        break;
 
       default:
         // others
