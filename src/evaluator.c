@@ -120,7 +120,14 @@ struct Value evaluateASTNode(const struct ASTNode* node, struct Environment* env
         case NODE_BOOL_LITERAL:
             return createBoolValue(node->data.boolValue);
         case NODE_VARIABLE_REFERENCE:
-            return *getValue(env, node->data.textValue);
+            {
+                struct Value* val = getValue(env, node->data.textValue);
+                if (!val) {
+                    printf("Variable reference %s does not exist, line %zu\n", node->data.textValue, node->line);
+                    exit(1);
+                }
+                return *val;
+            }
         case NODE_BINARY_OPERATION: 
             {
                 struct Value left = evaluateASTNode(node->data.binary.leftSide, env);
