@@ -262,6 +262,26 @@ struct Value evaluateASTNode(const struct ASTNode* node, struct Environment* env
                 }
                 return createNumberValue(0);
             }
+        case NODE_LOOP_STATEMENT:
+            {
+                struct Value loopCount = evaluateASTNode(node->data.loopStatement.loopCount, env);
+                // not number
+                if (loopCount.type != VALUE_NUMBER) {
+                    printf("Loop count must be a number value, line %zu\n", node->line);
+                    exit(1);
+                }
+                // negative
+                if (loopCount.data.number < 0.0) {
+                    printf("Negative loop count is not possible, line %zu\n", node->line);
+                    exit(1);
+                }
+                // convert double value to size_t,
+                size_t loopAmount = (size_t) loopCount.data.number;
+                for (size_t i = 0; i < loopAmount; i++) {
+                    evaluateAST(node->data.loopStatement.loopCodeBlock, env);
+                }
+                return createNumberValue(0);
+            }
         default:
             printf("Unhandled node.\n");
             exit(1);
