@@ -18,7 +18,10 @@ enum ASTNodeType {
 
     // FUNCTION OPERATIONS
     NODE_FUNCTION_DECLARATION,
-    NODE_FUNCTION_CALL
+    NODE_FUNCTION_CALL,
+
+    // IF
+    NODE_IF_STATEMENT
 };
 
 enum BinaryOperatorTypes {
@@ -63,6 +66,11 @@ struct ASTFunctionCall {
     size_t              argumentCount;
 };
 
+struct ASTIfStatement {
+    struct ASTNode* condition;
+    struct ASTNodeList* conditionTrueBlock;
+};
+
 struct ASTNode {
     enum ASTNodeType nodeType;
     size_t line;
@@ -76,6 +84,7 @@ struct ASTNode {
         struct  ASTVariableAssignment varAssignment;
         struct  ASTFunctionDeclaration funcDeclaration;
         struct  ASTFunctionCall funcCall;
+        struct  ASTIfStatement ifStatement;
     } data;
 };
 
