@@ -177,7 +177,8 @@ struct TokenList tokenise(const char* sourceCode) {
                 tokenType = FUNCTION_DECLARATION;
             else if (textSize == 2 && strncmp(&sourceCode[startIndex], "if", 2) == 0)
                 tokenType = IF_DECLARATION;
-
+            else if (textSize == 4 && strncmp(&sourceCode[startIndex], "loop", 4) == 0)
+                tokenType = LOOP_DECLARATION;
 
             union uLiteral literal;
             literal.text_value = 0;
